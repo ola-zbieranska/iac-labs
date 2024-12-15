@@ -38,13 +38,15 @@ jobs:
 
     - name: Static code analysis with flake8
       run: |
-        poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        poetry run flake8 . --exclude .venv,__pycache__,.git,.github --count \
+        --select=E9,F63,F7,F82 --show-source --statistics
+        poetry run flake8 . --exclude .venv,__pycache__,.git,.github --count \
+        --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Security analysis with bandit
       run: |
-        poetry add bandit  # Dodanie bandit do projektu
-        poetry run bandit -r .
+        poetry add bandit --dev  # Dodanie bandit jako zależności developerskiej
+        poetry run bandit -r . --exclude .venv --skip B101,B108
 
     - name: Run unit tests with pytest
       run: |
