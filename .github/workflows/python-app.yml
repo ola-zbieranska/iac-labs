@@ -1,6 +1,3 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
 name: Python application
 
 on:
@@ -18,36 +15,35 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./example-app  # Ustaw katalog roboczy
+        working-directory: ./example-app
 
     steps:
-    - name: Checkout repozytorium
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Setup Python 3.11
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.11"
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.11"
 
-    - name: Install Poetry
-      uses: abatilo/actions-poetry@v2  # Instalacja Poetry
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          poetry-version: latest
 
-    - name: Install dependencies
-      run: |
-        poetry install --no-root
+      - name: Install dependencies
+        run: |
+          poetry install --no-root
 
-    - name: Static code analysis with flake8
-      run: |
-        poetry run flake8 . --exclude .venv,__pycache__,.git,.github --count \
-        --select=E9,F63,F7,F82 --show-source --statistics
-        poetry run flake8 . --exclude .venv,__pycache__,.git,.github --count \
-        --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Static code analysis with flake8
+        run: |
+          poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-    - name: Security analysis with bandit
-      run: |
-        poetry add bandit --dev  # Dodanie bandit jako zależności developerskiej
-        poetry run bandit -r . --exclude .venv --skip B101,B108
+      - name: Security analysis with bandit
+        run: |
+          poetry run bandit -r .
 
-    - name: Run unit tests with pytest
-      run: |
-        poetry run pytest
+      - name: Run unit tests with pytest
+        run: |
+          poetry run pytest
